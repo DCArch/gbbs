@@ -3,9 +3,11 @@
 
 #include "assert.h"
 #include "graph_io.h"
+#include "dcsim_hooks.h"
 
 #define run_app(G, APP, mutates, rounds)    \
   double total_time = 0.0;                  \
+  DCSimStartGlobalROI();                    \
   for (size_t r = 0; r < rounds; r++) {     \
     if (mutates) {                          \
       auto G_copy = G;                      \
@@ -14,6 +16,7 @@
       total_time += APP(G, P);              \
     }                                       \
   }                                         \
+  DCSimEndGlobalROI();                      \
   auto time_per_iter = total_time / rounds; \
   std::cout << "# time per iter: " << time_per_iter << "\n";
 

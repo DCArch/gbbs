@@ -219,6 +219,7 @@ cc_library(
     hdrs = ["benchmark.h"],
     deps = [
         ":graph_io",
+        ":dcsim_hooks"
     ],
 )
 
@@ -256,4 +257,10 @@ cc_library(
         ":flags",
         ":macros",
     ],
+)
+
+# DCSim
+cc_library(
+    name = "dcsim_hooks",
+    hdrs = ["dcsim_hooks.h"],
 )
