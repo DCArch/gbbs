@@ -72,8 +72,8 @@ Compiler:
 
 Build system:
 * [Bazel](https://docs.bazel.build/versions/master/install.html) 2.1.0
-* Make --- though our primary build system is Bazel, we also maintain Makefiles
-  for those who wish to run benchmarks without installing Bazel.
+* ~~Make --- though our primary build system is Bazel, we also maintain Makefiles
+  for those who wish to run benchmarks without installing Bazel.~~
 
 The default compilation uses a lightweight scheduler developed at CMU (Homemade)
 for parallelism, which results in comparable performance to Cilk Plus. The
@@ -100,18 +100,10 @@ environment variables `CILK`, `OPENMP`, or `SERIAL` respectively.)
 
 To build:
 ```sh
-# Load external libraries as submodules. (This only needs to be run once.)
-git submodule update --init
-
-# For Bazel:
-$ bazel build  //...  # compiles all benchmarks
-
-# For Make:
-# First set the appropriate environment variables, e.g., first run
-# `export CILK=1` to compile with Cilk Plus.
-# After that, build using `make`.
-$ cd benchmarks/BFS/NonDeterministicBFS  # go to a benchmark
-$ make
+$ mkdir build
+$ bazel --output_base=build build -c opt //utils/...
+$ bazel --output_base=build build -c opt //internal_tools
+$ bazel --output_base=build build -c opt //benchmarks/...
 ```
 Note that the default compilation mode in bazel is to build optimized binaries
 (stripped of debug symbols). You can compile debug binaries by supplying `-c
@@ -119,11 +111,7 @@ dbg` to the bazel build command.
 
 The following commands cleans the directory:
 ```sh
-# For Bazel:
-$ bazel clean  # removes all executables
-
-# For Make:
-$ make clean  # removes executables for the current directory
+$ bazel clean
 ```
 
 Running code
@@ -133,13 +121,8 @@ flag "-s" to indicate a symmetric graph.  Symmetric graphs should be
 called with the "-s" flag for better performance. For example:
 
 ```sh
-# For Bazel:
-$ bazel run //benchmarks/BFS/NonDeterministicBFS:BFS_main -- -s -src 10 ~/gbbs/inputs/rMatGraph_J_5_100
-$ bazel run //benchmarks/IntegralWeightSSSP/JulienneDBS17:wBFS_main -- -s -w -src 15 ~/gbbs/inputs/rMatGraph_WJ_5_100
-
-# For Make:
-$ ./BFS -s -src 10 ../../../inputs/rMatGraph_J_5_100
-$ ./wBFS -s -w -src 15 ../../../inputs/rMatGraph_WJ_5_100
+$ ./bazel-bin/benchmarks/BFS/NonDeterministicBFS/BFS_main -- -s -src 10 inputs/rMatGraph_J_5_100
+$ ./bazel-bin/benchmarks/IntegralWeightSSSP/JulienneDBS17/wBFS_main -- -s -w -src 15 inputs/rMatGraph_WJ_5_100
 ```
 
 Note that the codes that compute single-source shortest paths (or centrality)
